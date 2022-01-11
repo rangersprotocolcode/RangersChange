@@ -14,6 +14,7 @@ function Index(props) {
   const [address,setAddress] = useState();
   const [miner,setMiner] = useState([]);
   const [minerID,setMinerID] = useState();
+  const [time,setTime] = useState();
 
   const getMinerList = () => {
     dispatch({
@@ -29,6 +30,10 @@ function Index(props) {
         setMiner(res)
       }
     })
+    const time = setTimeout(() => {
+      getMinerList();
+    },1000 * 10);
+    setTime(time);
   }
 
   const onSearch = e => {
@@ -92,12 +97,6 @@ function Index(props) {
     key: 'id',
   }]
 
-  const data = [{
-    key: 1,
-    id: 1234,
-    address: 890
-  }]
-
   useEffect(() => {
     if (typeof window.ethereum == 'undefined') {
       Modal.warning({
@@ -116,7 +115,13 @@ function Index(props) {
   },[]);
 
   useEffect(() => {
-    getMinerList();
+    if(address){
+      getMinerList();
+    }
+
+    return () => {
+      clearTimeout(time);
+    }
   },[address])
 
   return (
