@@ -40,7 +40,7 @@ function Index(props) {
     let reg = /^(0x)?[0-9a-fA-F]{40}$/;
     if(!e)return;
     if(!minerID){
-      message.error('minerID is allowed');
+      message.error("Can't find the minerID.");
       return;
     }
     if(!reg.test(e)){
