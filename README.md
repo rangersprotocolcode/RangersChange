@@ -8,7 +8,7 @@
 
 入参：json格式 string
 
-## 2 调用matamash，对后端接口返回的hash字段签名
+## 2 调用matamask，对后端接口返回的hash字段签名
 代码入口： https://github.com/rangersprotocolcode/RangersChange/blob/main/src/pages/home/index.jsx#L56
 
 ## 3 将签名附着于后端接口返回的json字符串中
