@@ -1,6 +1,6 @@
 import React, {useState, useEffect,useCallback } from 'react';
 import {Input,message,Modal,Table} from 'antd';
-import {getAddress} from '@/utils/tool'
+import {getAddress,addressChannge} from '@/utils/tool'
 import {connect} from 'dva';
 import styles from './index.less';
 
@@ -105,6 +105,9 @@ function Index(props) {
     }
     getAddress(res => {
       setAddress(res[0])
+    })
+    addressChannge(res => {
+      setAddress(res[0]);
     })
     websocket.onopen = () => {
       console.log("Websoclet connection succeeded");
