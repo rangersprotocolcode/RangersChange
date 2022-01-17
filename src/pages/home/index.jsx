@@ -1,5 +1,5 @@
 import React, {useState, useEffect,useCallback } from 'react';
-import {Input,message,Modal,Table} from 'antd';
+import {Input,message,Modal,Table,Button} from 'antd';
 import {getAddress,addressChannge} from '@/utils/tool'
 import {connect} from 'dva';
 import styles from './index.less';
@@ -12,18 +12,19 @@ const websocket = new WebSocket(path);
 function Index(props) {
   const {dispatch} = props;
   const [address,setAddress] = useState();
+  const [newAddr,setNewAddr] = useState('');
   const [miner,setMiner] = useState([]);
   const [minerID,setMinerID] = useState();
   const [time,setTime] = useState();
 
-  const getMinerList = () => {
+  const getMinerList = addr => {
     dispatch({
       type: 'home/queryMiner'
     }).then(res => {
       if(res){
         res.forEach(value => {
           value['key'] = value.id;
-          if(address == value.account){
+          if(addr == value.account){
             setMinerID(value.id);
           }
         })
@@ -31,23 +32,29 @@ function Index(props) {
       }
     })
     const time = setTimeout(() => {
-      getMinerList();
+      getMinerList(addr);
     },1000 * 10);
     setTime(time);
   }
 
-  const onSearch = e => {
+  console.log(miner)
+
+  const onSearch = () => {
     let reg = /^(0x)?[0-9a-fA-F]{40}$/;
-    if(!e)return;
+    if(!newAddr)return;
     if(!minerID){
       message.error("Can't find the minerID.");
       return;
     }
-    if(!reg.test(e)){
+    if(!reg.test(newAddr)){
       message.error('invalid address');
       return;
     }
-    const userAddr = e.trim();
+    if(miner.filter(value => value.account == newAddr).length > 0){
+      message.warning(newAddr + ' ' + 'is a miner already');
+      return;
+    }
+    const userAddr = newAddr.trim();
     if(address){
       dispatch({
         type: 'home/queryAccounttx',
@@ -108,6 +115,7 @@ function Index(props) {
     })
     addressChannge(res => {
       setAddress(res[0]);
+      getMinerList(res[0]);
     })
     websocket.onopen = () => {
       console.log("Websoclet connection succeeded");
@@ -119,7 +127,7 @@ function Index(props) {
 
   useEffect(() => {
     if(address){
-      getMinerList();
+      getMinerList(address);
     }
 
     return () => {
@@ -129,16 +137,21 @@ function Index(props) {
 
   return (
     <div className={styles.home}>
-      <h1>收益账户</h1>
-      <div className={styles.address}>
-        <ul>
-          <li> <span>Address:</span> {address}</li>
-          <li> <span>Miner ID:</span> {minerID} </li>
-        </ul>
-        <Search size='large' placeholder="input your address" onSearch={onSearch} enterButton={<span>确定</span>} />
-      </div>
-      <div>
-        <Table columns={columns} dataSource={miner} pagination={false}/>
+      <div className={styles.income}>
+        <h1>Income Account</h1>
+        <div className={styles.address}>
+          <ul>
+            <li> <span>Address:</span> {address}</li>
+            <li> <span>Miner ID:</span> {minerID} </li>
+          </ul>
+          <div className={styles.inputSty}>
+            <Input bordered={false} placeholder="input your address" onChange={e => setNewAddr(e.target.value)}/>
+            <Button type='primary' onClick={onSearch}>确定</Button>
+          </div>
+        </div>
+        <div className={styles.myTable}>
+          <Table columns={columns} dataSource={miner} pagination={false}/>
+        </div>
       </div>
     </div>
   );

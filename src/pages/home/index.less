@@ -1,21 +1,74 @@
 .home{
   height: 100%;
-  width: 60%;
-  margin: auto;
-  h1{
-    text-align: center;
-    color: #666;
-    font-size: 30px;
-    padding-top: 200px;
+  background-image: linear-gradient(#3b498e,#2a356e);
+  .income{
+    width: 70%;
+    margin: auto;
+    h1{
+      color: #fff;
+      text-align: center;
+      font-size: 30px;
+      margin-top: 60px;
+      display: inline-block;
+      padding: 20px 0 30px;
+      width: 100%;
+      background: url(../../assets/images/title.png) no-repeat;
+      background-position: bottom;
+    }
+    .address{
+      margin: 30px auto 30px;
+      ul{
+        margin-bottom: 20px;
+        li{
+          font-size: 16px;
+          color: #fff;
+          span{
+            font-weight: bold;
+          }
+        }
+      }
+      .inputSty{
+        display: flex;
+        justify-content: space-between;
+        input{
+          background: #97bdec;
+          border-radius: 8px;
+          color: #fff;
+        }
+        ::-webkit-input-placeholder {
+          color: #4b5e76;
+        }
+        button{
+          margin-left: 10px;
+          background: #8599ba;
+          border: none;
+          border-radius: 8px;
+        }
+      }
+    }
   }
-  .address{
-    margin: 30px auto 30px;
-    ul{
-      margin-bottom: 20px;
-      li{
-        font-size: 16px;
-        span{
-          font-weight: bold;
+}
+.myTable{
+  background: #3e4c92;
+  padding: 10px 20px;
+  border-radius: 8px;
+  max-height: 400px;
+  overflow: auto;
+  table{
+    color: #fff;
+    thead{
+      th{
+        background: #3e4c92;
+        color: #fff;
+        border:none
+      }
+    }
+    tbody{
+      background: #313e79;
+      tr{
+        td{
+          background: transparent !important;
+          border: none;
         }
       }
     }
