@@ -18,6 +18,16 @@ function Index(props) {
   const [time,setTime] = useState();
 
   const getMinerList = addr => {
+    if(miner.length > 0){
+      miner.forEach(value => {
+        if(addr == value.account){
+          setMinerID(value.id);
+        }else{
+          setMinerID('');
+        }
+      })
+      return;
+    }
     dispatch({
       type: 'home/queryMiner'
     }).then(res => {
@@ -37,8 +47,6 @@ function Index(props) {
     setTime(time);
   }
 
-  console.log(miner)
-
   const onSearch = () => {
     let reg = /^(0x)?[0-9a-fA-F]{40}$/;
     if(!newAddr)return;
@@ -51,7 +59,7 @@ function Index(props) {
       return;
     }
     if(miner.filter(value => value.account == newAddr).length > 0){
-      message.warning(newAddr + ' ' + 'is a miner already');
+      message.warning(newAddr + ' ' + 'is already a miner.');
       return;
     }
     const userAddr = newAddr.trim();
