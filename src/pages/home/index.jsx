@@ -18,16 +18,6 @@ function Index(props) {
   const [time,setTime] = useState();
 
   const getMinerList = addr => {
-    if(miner.length > 0){
-      miner.forEach(value => {
-        if(addr == value.account){
-          setMinerID(value.id);
-        }else{
-          setMinerID('');
-        }
-      })
-      return;
-    }
     dispatch({
       type: 'home/queryMiner'
     }).then(res => {
@@ -36,6 +26,8 @@ function Index(props) {
           value['key'] = value.id;
           if(addr == value.account){
             setMinerID(value.id);
+          }else{
+            setMinerID('');
           }
         })
         setMiner(res)
