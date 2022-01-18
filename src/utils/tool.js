@@ -40,11 +40,45 @@ export const addressChannge = fn => {
   }
 }
 
+export const getBalance = (address,fn) => {
+  if(ethereum){
+    ethereum.request({
+      "method":"eth_getBalance",
+      "jsonrpc":"2.0",
+      "id":1,
+      "params":[address, "latest"]
+    }).then(res => fn(res))
+  }
+}
+
 export const walletChainSwitch = (fn,chainId) => {
   if(ethereum){
     ethereum.request({
       method: 'wallet_switchEthereumChain',
       params: [{ chainId }]
+    }).then(res => fn(res))
+    .catch(err => {
+      console.log('newwork wrong:' + err)
+    })
+  }
+}
+
+export const walletChainAdd = fn => {
+  if(ethereum){
+    ethereum.request({
+      method: 'wallet_addEthereumChain',
+      params: [
+        { 
+          chainId: '0x7e9',
+          chainName: 'Rangers Protocol Mainnet',
+          nativeCurrency: {
+          name: 'Rangers Protocol Mainnet',
+          symbol: 'RPG',
+          decimals: 18
+        },
+        rpcUrls: ['https://mainnet.rangersprotocol.com/api/jsonrpc'],
+        blockExplorerUrls: ['https://scan.rangersprotocol.com'],
+      }]
     }).then(res => fn(res))
     .catch(err => {
       console.log('newwork wrong:' + err)

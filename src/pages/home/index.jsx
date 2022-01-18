@@ -1,6 +1,6 @@
 import React, {useState, useEffect,useCallback } from 'react';
 import {Input,message,Modal,Table,Button} from 'antd';
-import {getAddress,addressChannge} from '@/utils/tool'
+import {getAddress,addressChannge,getBalance,walletChainAdd,getCurChain,chainChange} from '@/utils/tool'
 import {connect} from 'dva';
 import styles from './index.less';
 
@@ -15,20 +15,24 @@ function Index(props) {
   const [newAddr,setNewAddr] = useState('');
   const [miner,setMiner] = useState([]);
   const [minerID,setMinerID] = useState();
+  const [balance,setBalance] = useState(0);
   const [time,setTime] = useState();
+
+  const reg = /^(0x)?[0-9a-fA-F]{40}$/;
 
   const getMinerList = addr => {
     dispatch({
       type: 'home/queryMiner'
     }).then(res => {
       if(res){
+        const minerList = res.filter(value => value.account == addr);
+        if(minerList.length > 0){
+          setMinerID(minerList[0].id);
+        }else{
+          setMinerID('');
+        }
         res.forEach(value => {
           value['key'] = value.id;
-          if(addr == value.account){
-            setMinerID(value.id);
-          }else{
-            setMinerID('');
-          }
         })
         setMiner(res)
       }
@@ -39,21 +43,37 @@ function Index(props) {
     setTime(time);
   }
 
+  const getUserBalance = address => {
+    getBalance(address,res => {
+      const v = parseInt(res,16) / Math.pow(10,18);
+      setBalance(v);
+    })
+  }
+
   const onSearch = () => {
-    let reg = /^(0x)?[0-9a-fA-F]{40}$/;
     if(!newAddr)return;
     if(!minerID){
       message.error("Can't find the minerID.");
       return;
     }
+
     if(!reg.test(newAddr)){
       message.error('invalid address');
       return;
     }
+
     if(miner.filter(value => value.account == newAddr).length > 0){
       message.warning(newAddr + ' ' + 'is already a miner.');
       return;
     }
+
+    if(balance < 0.0001){
+      Modal.warning({
+        title: 'Insufficient funds.'
+      });
+      return;
+    }
+
     const userAddr = newAddr.trim();
     if(address){
       dispatch({
@@ -105,17 +125,42 @@ function Index(props) {
   }]
 
   useEffect(() => {
-    if (typeof window.ethereum == 'undefined') {
+    if(typeof window.ethereum == 'undefined') {
       Modal.warning({
         title: 'MetaMask is not installed!'
       });
+    }else{
+      getAddress(addrList => {
+        //0x251c 0x7e9
+        const addr = addrList[0];
+        setAddress(addr);
+        getCurChain(res => {
+          if(res != '0x7e9'){
+            walletChainAdd(val => {
+              getUserBalance(addr);
+            })
+          }else{
+            getUserBalance(addr);
+          }
+        })
+      })
     }
-    getAddress(res => {
-      setAddress(res[0])
-    })
+    
     addressChannge(res => {
-      setAddress(res[0]);
-      getMinerList(res[0]);
+      const addr = res[0];
+      setAddress(addr);
+      getMinerList(addr);
+      getUserBalance(addr);
+    })
+
+    chainChange(res => {
+      if(res == '0x7e9'){
+        getAddress(addr => {
+          getUserBalance(addr[0]);
+        });
+      }else{
+        setBalance(0);
+      }
     })
     websocket.onopen = () => {
       console.log("Websoclet connection succeeded");
@@ -123,17 +168,11 @@ function Index(props) {
     websocket.onerror = function() {
       console.log("Websoclet connection failed");
     }
-  },[]);
-
-  useEffect(() => {
-    if(address){
-      getMinerList(address);
-    }
 
     return () => {
       clearTimeout(time);
     }
-  },[address])
+  },[]);
 
   return (
     <div className={styles.home}>
@@ -146,7 +185,7 @@ function Index(props) {
           </ul>
           <div className={styles.inputSty}>
             <Input bordered={false} placeholder="input your address" onChange={e => setNewAddr(e.target.value)}/>
-            <Button type='primary' onClick={onSearch}>确定</Button>
+            <Button type='primary' disabled={!(reg.test(newAddr) && minerID)} onClick={onSearch}>确定</Button>
           </div>
         </div>
         <div className={styles.myTable}>
