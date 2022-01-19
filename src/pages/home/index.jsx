@@ -16,7 +16,6 @@ function Index(props) {
   const [miner,setMiner] = useState([]);
   const [minerID,setMinerID] = useState();
   const [balance,setBalance] = useState(0);
-  const [time,setTime] = useState();
 
   const reg = /^(0x)?[0-9a-fA-F]{40}$/;
 
@@ -34,13 +33,9 @@ function Index(props) {
         res.forEach(value => {
           value['key'] = value.id;
         })
-        setMiner(res)
+        setMiner(res);
       }
     })
-    const time = setTimeout(() => {
-      getMinerList(addr);
-    },1000 * 10);
-    setTime(time);
   }
 
   const getUserBalance = address => {
@@ -96,6 +91,8 @@ function Index(props) {
               // console.log(res)
               if(websocket.readyState == 1){
                 websocket.send(JSON.stringify(res));
+                setNewAddr('');
+                getMinerList(address);
                 Modal.success({
                   title: 'Changed successful!'
                 });
@@ -138,9 +135,11 @@ function Index(props) {
           if(res != '0x7e9'){
             walletChainAdd(val => {
               getUserBalance(addr);
+              getMinerList(addr);
             })
           }else{
             getUserBalance(addr);
+            getMinerList(addr);
           }
         })
       })
@@ -169,8 +168,14 @@ function Index(props) {
       console.log("Websoclet connection failed");
     }
 
+    let timer = setInterval(() => {
+      getAddress(res => {
+        getMinerList(res[0]);
+      })
+    },1000 * 10)
+
     return () => {
-      clearTimeout(time);
+      clearInterval(timer);
     }
   },[]);
 
@@ -184,7 +189,7 @@ function Index(props) {
             <li> <span>Miner ID:</span> {minerID} </li>
           </ul>
           <div className={styles.inputSty}>
-            <Input bordered={false} placeholder="input your address" onChange={e => setNewAddr(e.target.value)}/>
+            <Input bordered={false} placeholder="input your address" value={newAddr} onChange={e => setNewAddr(e.target.value)}/>
             <Button type='primary' disabled={!(reg.test(newAddr) && minerID)} onClick={onSearch}>确定</Button>
           </div>
         </div>
