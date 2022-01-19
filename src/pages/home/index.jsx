@@ -1,12 +1,13 @@
-import React, {useState, useEffect,useCallback } from 'react';
+import React, {useState, useEffect } from 'react';
 import {Input,message,Modal,Table,Button} from 'antd';
 import {getAddress,addressChannge,getBalance,walletChainAdd,getCurChain,chainChange} from '@/utils/tool'
 import {connect} from 'dva';
 import styles from './index.less';
 
-const { Search } = Input;
 const ethereum = window.ethereum;
-const path = 'wss://mainnet.rangersprotocol.com/api/writer';
+const pathMain = 'wss://mainnet.rangersprotocol.com/api/writer';
+const pathDev = 'ws://192.168.2.19/api/writer';
+const path = process.env.chainNet == 'prod' ? pathMain : pathDev;
 const websocket = new WebSocket(path);
 
 function Index(props) {
@@ -93,12 +94,15 @@ function Index(props) {
                 websocket.send(JSON.stringify(res));
                 setNewAddr('');
                 getMinerList(address);
-                Modal.success({
-                  title: 'Changed successful!'
-                });
-                // websocket.onmessage = function(res) {
-                //   console.log(res)
-                // }
+                
+                websocket.onmessage = function(res) {
+                  const data = res.data && JSON.parse(res.data);
+                  if(data.status == 0){
+                    Modal.success({
+                      title: 'Changed successful!'
+                    });
+                  }
+                }
               }
             }
           })
@@ -122,17 +126,17 @@ function Index(props) {
   }]
 
   useEffect(() => {
+    const mainCode = process.env.chainNet == 'prod' ? '0x7e9' : '0x251c';
     if(typeof window.ethereum == 'undefined') {
       Modal.warning({
         title: 'MetaMask is not installed!'
       });
     }else{
       getAddress(addrList => {
-        //0x251c 0x7e9
         const addr = addrList[0];
         setAddress(addr);
         getCurChain(res => {
-          if(res != '0x7e9'){
+          if(res != mainCode){
             walletChainAdd(val => {
               getUserBalance(addr);
               getMinerList(addr);
@@ -153,7 +157,7 @@ function Index(props) {
     })
 
     chainChange(res => {
-      if(res == '0x7e9'){
+      if(res == mainCode){
         getAddress(addr => {
           getUserBalance(addr[0]);
         });
