@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "start": "umi dev",
-    "prod": "cross-env UMI_ENV=prod umi build && cp -r dist/* /Users/shengwenzheng/html/change",
+    "prod": "cross-env UMI_ENV=prod umi build && cd /Users/shengwenzheng/html/change && rm -rf * && cd /Users/shengwenzheng/RangersChange && cp -r dist/* /Users/shengwenzheng/html/change",
     "test": "cross-env UMI_ENV=test umi build",
     "dev": "cross-env UMI_ENV=dev umi build",
     "buildAnalyze": "ANALYZE=1 umi build",

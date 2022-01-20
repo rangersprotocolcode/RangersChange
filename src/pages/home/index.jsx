@@ -183,8 +183,6 @@ function Index(props) {
     }
   },[]);
 
-  
-
   return (
     <div className={styles.home}>
       <div className={styles.income}>
