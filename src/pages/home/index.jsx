@@ -99,7 +99,7 @@ function Index(props) {
                   const data = res.data && JSON.parse(res.data);
                   if(data.status == 0){
                     Modal.success({
-                      title: 'Changed successful!'
+                      title: 'Changed successfully!'
                     });
                   }
                 }
@@ -186,7 +186,7 @@ function Index(props) {
   return (
     <div className={styles.home}>
       <div className={styles.income}>
-        <h1>Income Account</h1>
+        <h1>Node Reward Address Replacement</h1>
         <div className={styles.address}>
           <ul>
             <li> <span>Address:</span> {address}</li>
@@ -194,7 +194,7 @@ function Index(props) {
           </ul>
           <div className={styles.inputSty}>
             <Input bordered={false} placeholder="input your address" value={newAddr} onChange={e => setNewAddr(e.target.value)}/>
-            <Button type='primary' disabled={!(reg.test(newAddr) && minerID)} onClick={onSearch}>确定</Button>
+            <Button type='primary' disabled={!(reg.test(newAddr) && minerID)} onClick={onSearch}>Change</Button>
           </div>
         </div>
         <div className={styles.myTable}>
