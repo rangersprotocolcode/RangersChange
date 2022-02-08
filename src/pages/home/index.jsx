@@ -1,5 +1,6 @@
 import React, {useState, useEffect } from 'react';
 import {Input,message,Modal,Table,Button} from 'antd';
+import logo from '@/assets/images/logo.png';
 import {getAddress,addressChannge,getBalance,walletChainAdd,getCurChain,chainChange} from '@/utils/tool'
 import {connect} from 'dva';
 import styles from './index.less';
@@ -185,6 +186,9 @@ function Index(props) {
 
   return (
     <div className={styles.home}>
+      <a href='https://www.rangersprotocol.com' className={styles.logo}>
+        <img src={logo} alt=""/>
+      </a>
       <div className={styles.income}>
         <h1>Node Reward Address Replacement</h1>
         <div className={styles.address}>
