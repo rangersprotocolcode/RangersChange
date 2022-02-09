@@ -186,7 +186,7 @@ function Index(props) {
 
   return (
     <div className={styles.home}>
-      <a href='https://www.rangersprotocol.com' className={styles.logo}>
+      <a href='https://www.rangersprotocol.com' target='_blank' className={styles.logo}>
         <img src={logo} alt=""/>
       </a>
       <div className={styles.income}>
